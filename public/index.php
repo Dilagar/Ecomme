@@ -57,9 +57,9 @@ $res = mysqli_query($conn, $sql);
         </form>
     </div>
 
-    <div class="row" style="flex-wrap:wrap;gap:16px">
+    <div class="row" style="display:flex; flex-wrap:wrap; gap:16px">
         <?php while($row = mysqli_fetch_assoc($res)): ?>
-            <div class="card" style="width:calc(33% - 10px)">
+            <div class="card" style="flex: 1 1 calc(33.333% - 16px); box-sizing:border-box;">
                 <a href="/Ecomme/public/product.php?slug=<?php echo e($row['slug']); ?>">
                     <?php if (!empty($row['image'])): ?>
                         <img src="/Ecomme/uploads/<?php echo e($row['image']); ?>" alt="" style="width:100%;max-height:200px;object-fit:cover;border-radius:6px">
