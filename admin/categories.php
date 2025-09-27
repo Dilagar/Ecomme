@@ -7,6 +7,7 @@ require_once __DIR__ . '/../lib/helpers.php';
 $action = get_param('action', 'list');
 
 if ($action === 'create' && is_post()) {
+    
     $name = post_param('name');
     $slug = slugify($name);
     $name_safe = mysqli_real_escape_string($conn, $name);
