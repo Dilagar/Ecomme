@@ -4,7 +4,7 @@ h1,h2,h3{margin:8px 0 16px}
 table{width:100%;border-collapse:collapse;background:#fff}
 th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
 input,select,textarea,button{width:100%;padding:10px;margin:6px 0 12px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}
-button{background:#2d6cdf;color:#fff;border:none;cursor:pointer}
+button{background:#12dd6d;color:#c2c8bb;border:none;cursor:pointer}
 button:disabled{background:#999}
 .row{display:flex;gap:16px}
 .col{flex:1}
