@@ -96,7 +96,7 @@ if (is_post()) {
             <?php foreach ($addresses as $addr): ?>
                 <label style="display:block;border:1px solid #eee;padding:10px;border-radius:6px;margin:6px 0;">
                     <input type="radio" name="address_id" value="<?php echo (int)$addr['id']; ?>" <?php echo ((int)$addr['is_default']===1)?'checked':''; ?>>
-                    <?php echo e($addr['full_name']); ?>, <?php echo e($addr['line1']); ?>, <?php echo e($addr['city']); ?>, <?php echo e($addr['postal_code']); ?>, <?php echo e($addr['country']); ?>
+                    <?php echo e($addr['name']); ?>, <?php echo e($addr['address_line1']); ?>, <?php echo e($addr['city']); ?>, <?php echo e($addr['postal_code']); ?>, <?php echo e($addr['country']); ?>
                 </label>
             <?php endforeach; ?>
         </div>

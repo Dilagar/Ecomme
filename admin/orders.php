@@ -19,7 +19,7 @@ if ($action === 'update_status' && is_post()) {
 }
 
 $orders = mysqli_query($conn, "
-    SELECT o.*, u.email as user_email, a.full_name, a.line1, a.city, a.postal_code, a.country
+    SELECT o.*, u.email as user_email, a.name as full_name, a.address_line1 as line1, a.city, a.postal_code, a.country
     FROM orders o 
     JOIN users u ON u.id = o.user_id 
     JOIN addresses a ON a.id = o.address_id 

@@ -3,6 +3,34 @@ require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/../lib/helpers.php';
 require_once __DIR__ . '/../lib/auth.php';
 
+// Handle Add to Cart form submission
+if (isset($_POST['add_to_cart']) && isset($_POST['product_id'])) {
+    $product_id = (int)$_POST['product_id'];
+    $quantity = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
+    
+    // Initialize cart if not exists
+    if (!isset($_SESSION['cart'])) {
+        $_SESSION['cart'] = [];
+    }
+    
+    // Check if product exists and is in stock
+    $check_product = mysqli_query($conn, "SELECT id, stock FROM products WHERE id=$product_id AND is_active=1 LIMIT 1");
+    if ($check_product && mysqli_num_rows($check_product) > 0) {
+        $product = mysqli_fetch_assoc($check_product);
+        if ((int)$product['stock'] > 0) {
+            // Add to cart
+            if (!isset($_SESSION['cart'][$product_id])) {
+                $_SESSION['cart'][$product_id] = $quantity;
+            } else {
+                $_SESSION['cart'][$product_id] += $quantity;
+            }
+            
+            // Redirect to cart page
+            redirect('/Ecomme/public/cart.php');
+        }
+    }
+}
+
 $q = get_param('q');
 $sort = get_param('sort'); // price_asc | price_desc | newest
 
@@ -26,29 +54,26 @@ $debug['sql'] = $sql;
 $debug['error'] = mysqli_error($conn);
 $debug['num_rows'] = $res ? mysqli_num_rows($res) : 0;
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Shop</title>
-    <link rel="stylesheet" href="/Ecomme/assets/styles.css">
-    <script>
-        // Function to show cart notification
-        function showCartNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'alert-cart';
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            // Remove notification after 3 seconds
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-    </script>
-</head>
-<body>
-<?php include __DIR__ . '/header.php'; ?>
+<?php include __DIR__ . '/modern-header.php'; ?>
+
+<script>
+    // Function to show cart notification
+    function showCartNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'alert alert-success';
+        notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+        notification.style.position = 'fixed';
+        notification.style.top = '20px';
+        notification.style.right = '20px';
+        notification.style.zIndex = '9999';
+        document.body.appendChild(notification);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+</script>
 
 <?php
 // Handle add to cart action
@@ -117,23 +142,31 @@ if (isset($_POST['add_to_cart']) && isset($_POST['product_id'])) {
 </script>
 <?php unset($_SESSION['cart_message']); endif; ?>
 <div class="container">
-    <div class="card">
-        <form method="get" class="row" style="align-items:flex-end;">
-            <div class="col">
-                <label>Search</label>
-                <input type="text" name="q" placeholder="Search products" value="<?php echo e($q); ?>">
+    <div class="card mb-4" style="border-radius: var(--border-radius); box-shadow: var(--box-shadow);">
+        <form method="get" class="row" style="align-items: center; padding: 15px;">
+            <div class="col" style="flex: 2;">
+                <div class="form-group mb-0">
+                    <label class="form-label">Search Products</label>
+                    <div style="display: flex;">
+                        <input type="text" name="q" class="form-control" placeholder="Search products..." value="<?php echo e($q); ?>">
+                    </div>
+                </div>
             </div>
             <div class="col">
-                <label>Sort</label>
-                <select name="sort">
-                    <option value="">Default</option>
-                    <option value="price_asc" <?php echo $sort==='price_asc'?'selected':''; ?>>Price: Low to High</option>
-                    <option value="price_desc" <?php echo $sort==='price_desc'?'selected':''; ?>>Price: High to Low</option>
-                    <option value="newest" <?php echo $sort==='newest'?'selected':''; ?>>Newest</option>
-                </select>
+                <div class="form-group mb-0">
+                    <label class="form-label">Sort By</label>
+                    <select name="sort" class="form-control">
+                        <option value="">Default</option>
+                        <option value="price_asc" <?php echo $sort==='price_asc'?'selected':''; ?>>Price: Low to High</option>
+                        <option value="price_desc" <?php echo $sort==='price_desc'?'selected':''; ?>>Price: High to Low</option>
+                        <option value="newest" <?php echo $sort==='newest'?'selected':''; ?>>Newest</option>
+                    </select>
+                </div>
             </div>
-            <div class="col" style="max-width:160px">
-                <button type="submit">Apply</button>
+            <div class="col" style="max-width: 160px;">
+                <button type="submit" class="btn btn-primary" style="margin-top: 24px;">
+                    <i class="fas fa-filter"></i> Apply
+                </button>
             </div>
         </form>
     </div>
@@ -153,50 +186,66 @@ if (isset($_POST['add_to_cart']) && isset($_POST['product_id'])) {
     </div>
     <?php endif; ?>
 
-    <div class="row" style="display:flex; flex-wrap:wrap; gap:16px">
+    <div class="product-grid">
         <?php if ($debug['num_rows'] > 0): ?>
             <?php while($row = mysqli_fetch_assoc($res)): ?>
-                <div class="card" style="flex: 1 1 calc(33.333% - 16px); box-sizing:border-box;">
-                    <a href="/Ecomme/public/product.php?slug=<?php echo e($row['slug']); ?>">
-                        <?php if (!empty($row['image'])): ?>
-                            <img src="/Ecomme/uploads/<?php echo e($row['image']); ?>" alt="" style="width:100%;max-height:200px;object-fit:cover;border-radius:6px">
-                        <?php endif; ?>
-                    </a>
-                    <h3 style="margin-top:10px;"><?php echo e($row['name']); ?></h3>
-                    <div><?php echo e($row['category_name']); ?></div>
-                    <div style="margin:6px 0"><strong>₹<?php echo e(number_format((float)$row['price'],2)); ?></strong></div>
-                <?php if ($row['stock'] <= 0): ?>
-                    <div style="color: #e74c3c; font-weight: bold; margin: 10px 0;">Out of Stock</div>
-                <?php endif; ?>
-                <div class="row">
-                    <div class="col" style="max-width:50%">
+                <div class="product-card">
+                    <div class="product-image">
                         <a href="/Ecomme/public/product.php?slug=<?php echo e($row['slug']); ?>">
-                            <button type="button">View</button>
+                            <?php if (!empty($row['image'])): ?>
+                                <img src="/Ecomme/uploads/<?php echo e($row['image']); ?>" alt="<?php echo e($row['name']); ?>">
+                            <?php else: ?>
+                                <img src="https://via.placeholder.com/300x300" alt="No image">
+                            <?php endif; ?>
                         </a>
+                        
+                        <?php if ($row['stock'] <= 0): ?>
+                            <div class="product-badge" style="background-color: var(--danger-color);">Out of Stock</div>
+                        <?php endif; ?>
+                        
+                        <div class="product-actions">
+                            <a href="/Ecomme/public/wishlist.php?add=<?php echo $row['id']; ?>" class="product-action-btn">
+                                <i class="fas fa-heart"></i>
+                            </a>
+                            <a href="/Ecomme/public/product.php?slug=<?php echo e($row['slug']); ?>" class="product-action-btn">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                        </div>
                     </div>
-                    <div class="col" style="max-width:50%">
+                    
+                    <div class="product-info">
+                        <div class="product-category"><?php echo e($row['category_name']); ?></div>
+                        <h3 class="product-title">
+                            <a href="/Ecomme/public/product.php?slug=<?php echo e($row['slug']); ?>"><?php echo e($row['name']); ?></a>
+                        </h3>
+                        <div class="product-price">
+                            <span class="current-price">₹<?php echo e(number_format((float)$row['price'],2)); ?></span>
+                        </div>
+                        
                         <?php if ($row['stock'] > 0): ?>
                             <form method="post" action="/Ecomme/public/index.php">
                                 <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
                                 <input type="hidden" name="quantity" value="1">
-                                <button type="submit" name="add_to_cart" class="add-to-cart-btn">Add to Cart</button>
+                                <button type="submit" name="add_to_cart" class="add-to-cart">
+                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                </button>
                             </form>
                         <?php else: ?>
-                            <button type="button" disabled style="opacity: 0.5; cursor: not-allowed;">Add to Cart</button>
+                            <button type="button" class="add-to-cart" disabled style="background-color: var(--gray-color);">
+                                Out of Stock
+                            </button>
                         <?php endif; ?>
                     </div>
                 </div>
-                </div>
             <?php endwhile; ?>
         <?php else: ?>
-            <div class="card" style="width: 100%; text-align: center; padding: 30px;">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 50px 20px;">
+                <i class="fas fa-search" style="font-size: 48px; color: var(--gray-color); margin-bottom: 20px;"></i>
                 <h3>No products available</h3>
                 <p>Please check back later or try a different search.</p>
             </div>
         <?php endif; ?>
     </div>
-</div>
-</body>
-</html>
+<?php include __DIR__ . '/modern-footer.php'; ?>
 
 

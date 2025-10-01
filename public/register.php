@@ -6,7 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (user_logged_in()) { redirect('/Ecomme/public/dashboard.php'); }
+if (user_logged_in()) { redirect('/Ecomme/public/index.php'); }
 
 $error = '';
 $success = '';
@@ -31,7 +31,7 @@ if (is_post()) {
             $success = 'Registration successful. You can now login.';
             // Auto-login after registration for better user experience
             if (user_login($email, $password)) {
-                redirect('/Ecomme/public/dashboard.php');
+                redirect('/Ecomme/public/index.php');
             }
         } else {
             $error = $res;
@@ -119,7 +119,6 @@ if (is_post()) {
     </style>
 </head>
 <body>
-<?php include __DIR__ . '/header.php'; ?>
 <div class="register-container">
     <div class="register-header">
         <h2>Create Your Account</h2>

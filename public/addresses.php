@@ -18,15 +18,15 @@ if ($action === 'create' && is_post()) {
     $phone = mysqli_real_escape_string($conn, post_param('phone'));
     $is_default = isset($_POST['is_default']) ? 1 : 0;
     if ($is_default) { mysqli_query($conn, "UPDATE addresses SET is_default=0 WHERE user_id=$user_id"); }
-    mysqli_query($conn, "INSERT INTO addresses (user_id, full_name, line1, line2, city, state, postal_code, country, phone, is_default) VALUES ($user_id,'$full_name','$line1','$line2','$city','$state','$postal_code','$country','$phone',$is_default)");
+    mysqli_query($conn, "INSERT INTO addresses (user_id, name, address_line1, address_line2, city, state, postal_code, country, phone, is_default) VALUES ($user_id,'$full_name','$line1','$line2','$city','$state','$postal_code','$country','$phone',$is_default)");
     redirect('/Ecomme/public/addresses.php');
 }
 
 if ($action === 'update' && is_post()) {
     $id = (int)post_param('id');
-    $full_name = mysqli_real_escape_string($conn, post_param('full_name'));
-    $line1 = mysqli_real_escape_string($conn, post_param('line1'));
-    $line2 = mysqli_real_escape_string($conn, post_param('line2'));
+    $full_name = mysqli_real_escape_string($conn, post_param('name'));
+    $line1 = mysqli_real_escape_string($conn, post_param('address_line1'));
+    $line2 = mysqli_real_escape_string($conn, post_param('address_line2'));
     $city = mysqli_real_escape_string($conn, post_param('city'));
     $state = mysqli_real_escape_string($conn, post_param('state'));
     $postal_code = mysqli_real_escape_string($conn, post_param('postal_code'));
@@ -51,7 +51,7 @@ if ($action === 'edit') {
     $editing = $res ? mysqli_fetch_assoc($res) : null;
 }
 
-$res = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id ORDER BY is_default DESC, id DESC");
+$res = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id ORDER BY is_default ASC, id ASC");
 ?>
 <!DOCTYPE html>
 <html>
@@ -77,11 +77,11 @@ $res = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id ORDER
                         <input type="hidden" name="id" value="<?php echo (int)$editing['id']; ?>">
                     <?php endif; ?>
                     <label>Full Name</label>
-                    <input type="text" name="full_name" value="<?php echo e($editing['full_name'] ?? ''); ?>" required>
+                    <input type="text" name="name" value="<?php echo e($editing['name'] ?? ''); ?>" required>
                     <label>Address Line 1</label>
-                    <input type="text" name="line1" value="<?php echo e($editing['line1'] ?? ''); ?>" required>
+                    <input type="text" name="address_line1" value="<?php echo e($editing['address_line1'] ?? ''); ?>" required>
                     <label>Address Line 2</label>
-                    <input type="text" name="line2" value="<?php echo e($editing['line2'] ?? ''); ?>">
+                    <input type="text" name="address_line2" value="<?php echo e($editing['address_line2'] ?? ''); ?>">
                     <label>City</label>
                     <input type="text" name="city" value="<?php echo e($editing['city'] ?? ''); ?>" required>
                     <label>State</label>
@@ -109,8 +109,8 @@ $res = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id ORDER
                     <tbody>
                     <?php while ($row = mysqli_fetch_assoc($res)): ?>
                         <tr>
-                            <td><?php echo e($row['full_name']); ?></td>
-                            <td><?php echo e($row['line1']); ?>, <?php echo e($row['city']); ?>, <?php echo e($row['postal_code']); ?>, <?php echo e($row['country']); ?></td>
+                            <td><?php echo e($row['name']); ?></td>    
+                            <td><?php echo e($row['address_line1']); ?>, <?php echo e($row['city']); ?>, <?php echo e($row['postal_code']); ?>, <?php echo e($row['country']); ?></td>
                             <td><?php echo e($row['phone']); ?></td>
                             <td><?php echo ((int)$row['is_default']===1?'Yes':'No'); ?></td>
                             <td>

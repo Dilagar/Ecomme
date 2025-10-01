@@ -1,14 +1,14 @@
 <?php
 require_once __DIR__ . '/../lib/auth.php';
 
-if (user_logged_in()) { redirect('/Ecomme/public/dashboard.php'); }
+if (user_logged_in()) { redirect('/Ecomme/public/index.php'); }
 
 $error = '';
 if (is_post()) {
     $email = post_param('email');
     $password = post_param('password');
     if (user_login($email, $password)) {
-        redirect('/Ecomme/public/dashboard.php');
+        redirect('/Ecomme/public/index.php');
     } else {
         $error = 'Invalid credentials';
     }
@@ -22,7 +22,7 @@ if (is_post()) {
     <link rel="stylesheet" href="/Ecomme/assets/styles.css">
 </head>
 <body>
-<?php include __DIR__ . '/header.php'; ?>
+
 <div class="container" style="max-width:480px;margin:40px auto;">
     <div class="card">
         <h2>Login</h2>

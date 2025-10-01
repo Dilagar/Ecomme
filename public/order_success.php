@@ -5,7 +5,7 @@ require_once __DIR__ . '/../lib/helpers.php';
 $id = (int)get_param('id');
 if ($id <= 0) { redirect('/Ecomme/public/index.php'); }
 
-$res = mysqli_query($conn, "SELECT o.*, a.full_name, a.line1, a.city, a.postal_code, a.country FROM orders o JOIN addresses a ON a.id=o.address_id WHERE o.id=$id LIMIT 1");
+$res = mysqli_query($conn, "SELECT o.*, a.name, a.address_line1, a.city, a.postal_code, a.country FROM orders o JOIN addresses a ON a.id=o.address_id WHERE o.id=$id LIMIT 1");
 $order = $res ? mysqli_fetch_assoc($res) : null;
 if (!$order) { 
     echo "Order not found. Error: " . mysqli_error($conn);
@@ -35,7 +35,7 @@ if (!$items) {
 <div class="container">
     <div class="card">
         <h2>Order #<?php echo (int)$order['id']; ?> Confirmed</h2>
-        <p>Shipping to: <?php echo e($order['full_name']); ?>, <?php echo e($order['line1']); ?>, <?php echo e($order['city']); ?>, <?php echo e($order['postal_code']); ?>, <?php echo e($order['country']); ?></p>
+        <p>Shipping to: <?php echo e($order['name']); ?>, <?php echo e($order['address_line1']); ?>, <?php echo e($order['city']); ?>, <?php echo e($order['postal_code']); ?>, <?php echo e($order['country']); ?></p>
         <p>Status: <?php echo e($order['status']); ?></p>
         <p>Total: ₹<?php echo e(number_format((float)$order['total_amount'],2)); ?></p>
         <a href="/Ecomme/public/invoice.php?id=<?php echo (int)$order['id']; ?>"><button>View Invoice</button></a>
