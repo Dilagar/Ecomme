@@ -19,11 +19,28 @@ function admin_login($email, $password) {
     $res = mysqli_query($conn, $sql);
     if ($res && mysqli_num_rows($res) === 1) {
         $admin = mysqli_fetch_assoc($res);
-        // Plaintext comparison as requested (no hashing)
-        if ($password === $admin['password']) {
-            $_SESSION['admin_id'] = $admin['id'];
-            $_SESSION['admin_email'] = $admin['email'];
-            return true;
+        
+        // Check if password is already hashed (starts with $2y$)
+        if (isset($admin['password_hash']) && !empty($admin['password_hash'])) {
+            // Password is hashed, verify it
+            if (password_verify($password, $admin['password_hash'])) {
+                $_SESSION['admin_id'] = $admin['id'];
+                $_SESSION['admin_email'] = $admin['email'];
+                return true;
+            }
+        } else if (isset($admin['password'])) {
+            // Legacy plaintext password, verify and update to hashed
+            if ($password === $admin['password']) {
+                // Update to hashed password
+                $hash = password_hash($password, PASSWORD_BCRYPT);
+                $hash_safe = mysqli_real_escape_string($conn, $hash);
+                $update_sql = "UPDATE admins SET password_hash = '$hash_safe', password = NULL WHERE id = " . $admin['id'];
+                mysqli_query($conn, $update_sql);
+                
+                $_SESSION['admin_id'] = $admin['id'];
+                $_SESSION['admin_email'] = $admin['email'];
+                return true;
+            }
         }
     }
     return false;

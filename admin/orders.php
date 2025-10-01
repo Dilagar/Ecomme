@@ -23,7 +23,7 @@ $orders = mysqli_query($conn, "
     FROM orders o 
     JOIN users u ON u.id = o.user_id 
     JOIN addresses a ON a.id = o.address_id 
-    ORDER BY o.id DESC
+    ORDER BY o.id ASC
 ");
 ?>
 <!DOCTYPE html>

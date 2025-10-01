@@ -18,15 +18,31 @@ $out_of_stock = ((int)$product['stock'] <= 0);
     <meta charset="utf-8">
     <title><?php echo e($product['name']); ?> - MyShop</title>
     <link rel="stylesheet" href="/Ecomme/assets/styles.css">
+    <script>
+        // Function to show cart notification
+        function showCartNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'alert-cart';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
 </head>
 <body>
-<div class="topbar">
-    <div><a href="/Ecomme/public/index.php"><strong>MyShop</strong></a></div>
-    <div>
-        <a href="/Ecomme/public/cart.php">Cart</a> |
-        <a href="/Ecomme/public/wishlist.php">Wishlist</a>
-    </div>
-</div>
+<?php 
+include __DIR__ . '/header.php';
+
+// Show notification if product was added to cart
+if (isset($_SESSION['cart_message'])) {
+    echo '<script>showCartNotification("' . $_SESSION['cart_message'] . '");</script>';
+    unset($_SESSION['cart_message']);
+}
+?>
 <div class="container">
     <div class="row">
         <div class="col">
@@ -47,7 +63,7 @@ $out_of_stock = ((int)$product['stock'] <= 0);
                 <?php endif; ?>
                 <div class="row">
                     <div class="col">
-                        <form method="post" action="/Ecomme/public/cart.php?action=add">
+                        <form method="post" action="/Ecomme/public/cart.php?action=add" onsubmit="showCartNotification('<?php echo e($product['name']); ?> added to cart!');">
                             <input type="hidden" name="product_id" value="<?php echo (int)$product['id']; ?>">
                             <button type="submit" <?php echo $out_of_stock?'disabled':''; ?>>Add to Cart</button>
                         </form>

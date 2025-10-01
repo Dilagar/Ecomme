@@ -86,7 +86,7 @@ if ($action === 'edit') {
     $editing = $res ? mysqli_fetch_assoc($res) : null;
 }
 
-$products = mysqli_query($conn, "SELECT p.*, c.name AS category_name FROM products p JOIN categories c ON c.id=p.category_id ORDER BY p.id DESC");
+$products = mysqli_query($conn, "SELECT p.*, c.name AS category_name FROM products p JOIN categories c ON c.id=p.category_id ORDER BY p.id ASC");
 ?>
 <!DOCTYPE html>
 <html>
@@ -96,20 +96,12 @@ $products = mysqli_query($conn, "SELECT p.*, c.name AS category_name FROM produc
     <link rel="stylesheet" href="/Ecomme/assets/styles.css">
 </head>
 <body>
-<div class="topbar">
-    <div><strong>Admin</strong> - Products</div>
-    <div>
-        <a href="/Ecomme/admin/categories.php">Categories</a>
-        |
-        <a href="/Ecomme/admin/logout.php">Logout</a>
-    </div>
-    
-</div>
+<?php include __DIR__ . '/header.php'; ?>
 
-<div class="container">
+<div class="admin-container">
     <div class="row">
         <div class="col">
-            <div class="card">
+            <div class="admin-card">
                 <h3><?php echo $editing ? 'Edit Product' : 'Add Product'; ?></h3>
                 <form method="post" action="?action=<?php echo $editing ? 'update' : 'create'; ?>" enctype="multipart/form-data">
                     <?php if ($editing): ?>
@@ -143,9 +135,9 @@ $products = mysqli_query($conn, "SELECT p.*, c.name AS category_name FROM produc
             </div>
         </div>
         <div class="col">
-            <div class="card">
+            <div class="admin-card">
                 <h3>All Products</h3>
-                <table>
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -173,9 +165,9 @@ $products = mysqli_query($conn, "SELECT p.*, c.name AS category_name FROM produc
                                 </span>
                             </td>
                             <td><?php echo ((int)$row['is_active']===1?'Yes':'No'); ?></td>
-                            <td class="actions">
-                                <a href="?action=edit&id=<?php echo (int)$row['id']; ?>">Edit</a>
-                                <a href="?action=delete&id=<?php echo (int)$row['id']; ?>" onclick="return confirm('Delete product?');">Delete</a>
+                            <td class="admin-actions">
+                                <a href="?action=edit&id=<?php echo (int)$row['id']; ?>" class="edit">Edit</a>
+                                <a href="?action=delete&id=<?php echo (int)$row['id']; ?>" class="delete" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
                             </td>
                         </tr>
                     <?php endwhile; ?>

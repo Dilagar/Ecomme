@@ -7,7 +7,7 @@ SET time_zone = '+00:00';
 CREATE TABLE IF NOT EXISTS admins (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   email VARCHAR(190) NOT NULL UNIQUE,
-  password VARCHAR(190) NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -134,9 +134,9 @@ CREATE TABLE IF NOT EXISTS order_items (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Seed an initial admin (change password after import)
-INSERT INTO admins (email, password)
-VALUES ('admin@example.com', 'Admin@123')
-ON DUPLICATE KEY UPDATE email = email;
+-- INSERT INTO admins (email, password)
+-- VALUES ('admin@example.com', 'Admin@123')
+-- ON DUPLICATE KEY UPDATE email = email;
 
 -- Seed categories
 INSERT INTO categories (name, slug) VALUES

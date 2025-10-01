@@ -4,7 +4,7 @@ h1,h2,h3{margin:8px 0 16px}
 table{width:100%;border-collapse:collapse;background:#fff}
 th,td{padding:10px;border-bottom:1px solid #eee;text-align:left}
 input,select,textarea,button{width:100%;padding:10px;margin:6px 0 12px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box}
-button{background:#12dd6d;color:#c2c8bb;border:none;cursor:pointer}
+button{background:#12dd6d;color:#070707;border:none;cursor:pointer}
 button:disabled{background:#999}
 .row{display:flex;gap:16px}
 .col{flex:1}
@@ -12,6 +12,203 @@ button:disabled{background:#999}
 .alert-error{background:#ffe0e0;color:#a10000}
 .alert-success{background:#e5ffea;color:#006b1f}
 .topbar{background:#fff;border-bottom:1px solid #eee;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.main-nav a{margin:0 5px;text-decoration:none;color:#333;font-weight:500}
+.main-nav a:hover{color:#12dd6d}
+.user-welcome{margin-left:10px;color:#666;font-size:0.9em}
+.breadcrumb{background:#f5f5f5;padding:8px 16px;font-size:0.9em;border-bottom:1px solid #eee}
+.breadcrumb a{text-decoration:none;color:#555}
+.breadcrumb a:hover{color:#12dd6d}
+
+/* Admin Panel Styles */
+.admin-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.admin-logo a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.admin-nav {
+    display: flex;
+    gap: 20px;
+}
+
+.admin-nav a {
+    color: #ecf0f1;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.admin-nav a:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.admin-nav a.active {
+    background-color: #3498db;
+    color: white;
+}
+
+.admin-nav a.logout-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.admin-nav a.logout-btn:hover {
+    background-color: #c0392b;
+}
+
+.admin-breadcrumb {
+    background-color: #f5f5f5;
+    padding: 10px 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.breadcrumb-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #666;
+    font-size: 14px;
+}
+
+.breadcrumb-container a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.breadcrumb-container .current {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Admin Content Styles */
+.admin-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.admin-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.admin-card h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+/* Admin Table Styles */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin-table th {
+    background-color: #f5f7fa;
+    text-align: left;
+    padding: 12px;
+    font-weight: 600;
+    color: #2c3e50;
+    border-bottom: 2px solid #ddd;
+}
+
+.admin-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.admin-table tr:hover {
+    background-color: #f9f9f9;
+}
+
+.admin-actions a {
+    display: inline-block;
+    margin-right: 8px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.admin-actions a.edit {
+    background-color: #3498db;
+    color: white;
+}
+
+.admin-actions a.delete {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* Dropdown Menu */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+.dropdown-toggle {
+  cursor: pointer;
+}
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+  padding: 8px 0;
+}
+.dropdown-menu a {
+  color: #333;
+  padding: 8px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+.dropdown-menu a:hover {
+  background-color: #f5f5f5;
+}
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+/* Alert Messages */
+.alert-cart {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #12dd6d;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 1000;
+  animation: fadeIn 0.3s, fadeOut 0.5s 2.5s forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 .card{background:#fff;border:1px solid #eee;border-radius:8px;padding:16px;margin:10px 0}
 .actions a, .actions form{display:inline-block;margin-right:6px}
 

@@ -39,7 +39,7 @@ if ($action === 'edit') {
     $editing = $res ? mysqli_fetch_assoc($res) : null;
 }
 
-$categories = mysqli_query($conn, "SELECT * FROM categories ORDER BY id DESC");
+$categories = mysqli_query($conn, "SELECT * FROM categories ORDER BY id ASC");
 ?>
 <!DOCTYPE html>
 <html>
@@ -49,34 +49,32 @@ $categories = mysqli_query($conn, "SELECT * FROM categories ORDER BY id DESC");
     <link rel="stylesheet" href="/Ecomme/assets/styles.css">
 </head>
 <body>
-<div class="topbar">
-    <div><strong>Admin</strong> - Categories</div>
-    <div>
-        <a href="/Ecomme/admin/products.php">Products</a>
-        |
-        <a href="/Ecomme/admin/logout.php">Logout</a>
-    </div>
-</div>
+<?php include __DIR__ . '/header.php'; ?>
 
-<div class="container">
+<div class="admin-container">
     <div class="row">
         <div class="col">
-            <div class="card">
+            <div class="admin-card">
                 <h3><?php echo $editing ? 'Edit Category' : 'Add Category'; ?></h3>
                 <form method="post" action="?action=<?php echo $editing ? 'update' : 'create'; ?>">
                     <?php if ($editing): ?>
                         <input type="hidden" name="id" value="<?php echo (int)$editing['id']; ?>">
                     <?php endif; ?>
-                    <label>Name</label>
-                    <input type="text" name="name" value="<?php echo e($editing['name'] ?? ''); ?>" required>
-                    <button type="submit"><?php echo $editing ? 'Update' : 'Create'; ?></button>
+                    <div class="form-group">
+                        <label>Category Name</label>
+                        <input type="text" name="name" value="<?php echo e($editing['name'] ?? ''); ?>" required>
+                    </div>
+                    <button type="submit" class="<?php echo $editing ? 'admin-login-btn' : 'admin-login-btn'; ?>"><?php echo $editing ? 'Update Category' : 'Create Category'; ?></button>
+                    <?php if ($editing): ?>
+                        <a href="/Ecomme/admin/categories.php" style="margin-left: 10px; text-decoration: none;">Cancel</a>
+                    <?php endif; ?>
                 </form>
             </div>
         </div>
         <div class="col">
-            <div class="card">
+            <div class="admin-card">
                 <h3>All Categories</h3>
-                <table>
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -91,9 +89,9 @@ $categories = mysqli_query($conn, "SELECT * FROM categories ORDER BY id DESC");
                             <td><?php echo (int)$row['id']; ?></td>
                             <td><?php echo e($row['name']); ?></td>
                             <td><?php echo e($row['slug']); ?></td>
-                            <td class="actions">
-                                <a href="?action=edit&id=<?php echo (int)$row['id']; ?>">Edit</a>
-                                <a href="?action=delete&id=<?php echo (int)$row['id']; ?>" onclick="return confirm('Delete category?');">Delete</a>
+                            <td class="admin-actions">
+                                <a href="?action=edit&id=<?php echo (int)$row['id']; ?>" class="edit">Edit</a>
+                                <a href="?action=delete&id=<?php echo (int)$row['id']; ?>" class="delete" onclick="return confirm('Are you sure you want to delete this category?');">Delete</a>
                             </td>
                         </tr>
                     <?php endwhile; ?>
