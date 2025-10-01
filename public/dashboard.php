@@ -5,7 +5,7 @@ require_once __DIR__ . '/../lib/auth.php';
 require_user();
 $user_id = (int)$_SESSION['user_id'];
 
-$orders = mysqli_query($conn, "SELECT * FROM orders WHERE user_id=$user_id ORDER BY id DESC");
+$orders = mysqli_query($conn, "SELECT * FROM orders WHERE user_id=$user_id ORDER BY id ASC");
 $wishlist_ids = isset($_SESSION['wishlist']) ? array_keys($_SESSION['wishlist']) : [];
 $wishlist = [];
 if (!empty($wishlist_ids)) {
@@ -16,7 +16,7 @@ if (!empty($wishlist_ids)) {
         $wishlist[] = $row; 
     }
 }
-$addresses = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id ORDER BY is_default DESC, id DESC");
+$addresses = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id ORDER BY is_default DESC, id ASC");
 ?>
 <!DOCTYPE html>
 <html>
@@ -87,8 +87,8 @@ $addresses = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id
                     <tbody>
                         <?php while ($a = mysqli_fetch_assoc($addresses)): ?>
                             <tr>
-                                <td><?php echo e($a['full_name']); ?></td>
-                                <td><?php echo e($a['line1']); ?>, <?php echo e($a['city']); ?>, <?php echo e($a['postal_code']); ?></td>
+                                <td><?php echo e($a['name']); ?></td>
+                                <td><?php echo e($a['address_line1']); ?>, <?php echo e($a['city']); ?>, <?php echo e($a['postal_code']); ?></td>
                                 <td><?php echo ((int)$a['is_default']===1?'Yes':'No'); ?></td>
                             </tr>
                         <?php endwhile; ?>
