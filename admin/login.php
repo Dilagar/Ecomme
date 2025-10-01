@@ -9,6 +9,10 @@ $error = '';
 if (is_post()) {
     $email = post_param('email');
     $password = post_param('password');
+    
+    // Debug information
+    error_log("Login attempt: Email=$email, Password length=" . strlen($password));
+    
     if (admin_login($email, $password)) {
         redirect('/Ecomme/admin/categories.php');
     } else {
@@ -98,7 +102,7 @@ if (is_post()) {
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required autocomplete="current-password">
+                <input type="password" id="password" name="password" required>   
             </div>
             
             <button type="submit">Login</button>

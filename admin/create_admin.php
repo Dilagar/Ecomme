@@ -43,6 +43,9 @@ if (is_post()) {
             $insert_sql = "INSERT INTO admins (email, password_hash) VALUES ('$email_safe', '$password_hash_safe')";
             if (mysqli_query($conn, $insert_sql)) {
                 $success = 'Admin account created successfully';
+                // Set session variables for login
+                $_SESSION['admin_id'] = mysqli_insert_id($conn);
+                $_SESSION['admin_email'] = $email;
             } else {
                 $error = 'Error creating admin account: ' . mysqli_error($conn);
             }
