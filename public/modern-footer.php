@@ -38,7 +38,7 @@
                     <h3 class="footer-title">Contact Us</h3>
                     <ul class="footer-links">
                         <li class="footer-link"><i class="fas fa-map-marker-alt"></i> No 10 , chennai , Tamil Nadu , 600096</li>
-                        <li class="footer-link"><i class="fas fa-phone"></i> +91 8870864847</li>
+                        <li class="footer-link"><i class="fas fa-phone"></i> +91 9876543219</li>
                         <li class="footer-link"><i class="fas fa-envelope"></i> admin@example.com</li>
                         
                     </ul>

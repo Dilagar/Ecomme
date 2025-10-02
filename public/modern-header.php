@@ -19,7 +19,7 @@ require_once __DIR__ . '/../lib/helpers.php';
         <div class="container">
             <div style="display: flex; justify-content: space-between;">
                 <div>
-                    <span><i class="fas fa-phone-alt"></i> +91 8870864847</span>
+                    <span><i class="fas fa-phone-alt"></i> +91 9876543219</span>
                     <span class="ml-3"><i class="fas fa-envelope"></i>admin@example.com</span>
                 </div>
                 <div>

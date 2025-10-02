@@ -40,12 +40,7 @@ if (!empty($_SESSION['wishlist'])) {
     <link rel="stylesheet" href="/Ecomme/assets/styles.css">
 </head>
 <body>
-<div class="topbar">
-    <div><a href="/Ecomme/public/index.php"><strong>MyShop</strong></a></div>
-    <div>
-        <a href="/Ecomme/public/cart.php">Cart</a>
-    </div>
-</div>
+<?php include __DIR__ . '/modern-header.php'; ?>
 <div class="container">
     <h2>Wishlist</h2>
     <table>
@@ -76,6 +71,7 @@ if (!empty($_SESSION['wishlist'])) {
         </tbody>
     </table>
 </div>
+<?php include __DIR__ . '/modern-footer.php'; ?>
 </body>
 </html>
 

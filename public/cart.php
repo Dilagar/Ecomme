@@ -145,7 +145,7 @@ $total = $subtotal; // no shipping/tax for simplicity
     </script>
 </head>
 <body>
-<?php include __DIR__ . '/header.php'; ?>
+<?php include __DIR__ . '/modern-header.php'; ?>
 <div class="container">
     <h2>Your Cart</h2>
     <form id="cart-form" method="post" action="?action=update">
@@ -197,6 +197,7 @@ $total = $subtotal; // no shipping/tax for simplicity
     </div>
     </form>
 </div>
+<?php include __DIR__ . '/modern-footer.php'; ?>
 </body>
 </html>
 

@@ -204,7 +204,7 @@ if (isset($_POST['add_to_cart']) && isset($_POST['product_id'])) {
                         <?php endif; ?>
                         
                         <div class="product-actions">
-                            <a href="/Ecomme/public/wishlist.php?add=<?php echo $row['id']; ?>" class="product-action-btn">
+                            <a href="javascript:void(0);" onclick="addToWishlist(<?php echo $row['id']; ?>)" class="product-action-btn">
                                 <i class="fas fa-heart"></i>
                             </a>
                             <a href="/Ecomme/public/product.php?slug=<?php echo e($row['slug']); ?>" class="product-action-btn">
@@ -247,5 +247,28 @@ if (isset($_POST['add_to_cart']) && isset($_POST['product_id'])) {
         <?php endif; ?>
     </div>
 <?php include __DIR__ . '/modern-footer.php'; ?>
+
+<script>
+function addToWishlist(productId) {
+    fetch('/Ecomme/public/wishlist_ajax.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'product_id=' + productId
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Product added to wishlist!');
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
 
 

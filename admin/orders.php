@@ -9,7 +9,7 @@ $action = get_param('action', 'list');
 if ($action === 'update_status' && is_post()) {
     $order_id = (int)post_param('order_id');
     $new_status = post_param('status');
-    $valid_statuses = ['on_process', 'shipped', 'delivered', 'cancelled'];
+    $valid_statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
     
     if (in_array($new_status, $valid_statuses)) {
         $status_safe = mysqli_real_escape_string($conn, $new_status);
@@ -74,7 +74,8 @@ $orders = mysqli_query($conn, "
                         <form method="post" action="?action=update_status" style="display:inline;">
                             <input type="hidden" name="order_id" value="<?php echo (int)$order['id']; ?>">
                             <select name="status" onchange="this.form.submit()">
-                                <option value="on_process" <?php echo $order['status']==='on_process'?'selected':''; ?>>On Process</option>
+                                <option value="pending" <?php echo $order['status']==='pending'?'selected':''; ?>>Pending</option>
+                                <option value="processing" <?php echo $order['status']==='processing'?'selected':''; ?>>Processing</option>
                                 <option value="shipped" <?php echo $order['status']==='shipped'?'selected':''; ?>>Shipped</option>
                                 <option value="delivered" <?php echo $order['status']==='delivered'?'selected':''; ?>>Delivered</option>
                                 <option value="cancelled" <?php echo $order['status']==='cancelled'?'selected':''; ?>>Cancelled</option>

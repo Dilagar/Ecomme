@@ -13,6 +13,9 @@ $items = mysqli_query($conn, "SELECT oi.*, p.name FROM order_items oi JOIN produ
 <!DOCTYPE html>
 <html>
 <head>
+    <div class="topbar">
+    <div><a href="/Ecomme/public/index.php"><strong>MyShop</strong></a></div>
+</div>
     <meta charset="utf-8">
     <title>Invoice #<?php echo (int)$order['id']; ?></title>
     <link rel="stylesheet" href="/Ecomme/assets/styles.css">

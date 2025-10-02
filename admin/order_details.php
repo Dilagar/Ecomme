@@ -8,7 +8,7 @@ $order_id = (int)get_param('id');
 if ($order_id <= 0) { redirect('/Ecomme/admin/orders.php'); }
 
 $order = mysqli_query($conn, "
-    SELECT o.*, u.email as user_email, a.full_name, a.line1, a.line2, a.city, a.state, a.postal_code, a.country, a.phone
+    SELECT o.*, u.email as user_email, a.name as full_name, a.address_line1 as line1, a.address_line2 as line2, a.city, a.state, a.postal_code, a.country, a.phone
     FROM orders o 
     JOIN users u ON u.id = o.user_id 
     JOIN addresses a ON a.id = o.address_id 
