@@ -62,12 +62,15 @@ if (is_post()) {
             }
         }
         ?>
-        <a href="#" 
-           class="google-btn" 
-           style="display:block;text-align:center;padding:10px;background:#4285F4;color:white;text-decoration:none;border-radius:4px;margin-bottom:10px;"
-           onclick="googleLogin(); return false;">
-            Continue with Google
-        </a>
+        <div class="social-login">
+            <a href="#" 
+               class="google-btn" 
+               style="display:flex;align-items:center;justify-content:center;padding:10px;background:#fff;color:#757575;text-decoration:none;border-radius:4px;margin-bottom:10px;border:1px solid #ddd;font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,0.1);"
+               onclick="googleLogin(); return false;">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style="width:18px;height:18px;margin-right:10px;">
+                Sign in with Google
+            </a>
+        </div>
         
         <script>
         function googleLogin() {

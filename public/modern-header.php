@@ -52,7 +52,6 @@ require_once __DIR__ . '/../lib/helpers.php';
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
-                <div id="search-results" class="search-results-dropdown"></div>
             </div>
             
             <style>
