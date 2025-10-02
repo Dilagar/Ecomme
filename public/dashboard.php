@@ -39,7 +39,7 @@ $addresses = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id
             <div class="card">
                 <h3>Order History</h3>
                 <table>
-                    <thead><tr><th>ID</th><th>Date</th><th>Status</th><th>Total</th></tr></thead>
+                    <thead><tr><th>ID</th><th>Date</th><th>Status</th><th>Total</th><th>Action</th></tr></thead>
                     <tbody>
                         <?php while ($o = mysqli_fetch_assoc($orders)): ?>
                             <tr>
@@ -51,6 +51,7 @@ $addresses = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id
                                     </span>
                                 </td>
                                 <td>₹<?php echo e(number_format((float)$o['total_amount'],2)); ?></td>
+                                <td><a href="/Ecomme/public/order_details.php?id=<?php echo (int)$o['id']; ?>" class="btn btn-sm">View</a></td>
                             </tr>
                         <?php endwhile; ?>
                     </tbody>

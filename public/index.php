@@ -33,11 +33,16 @@ if (isset($_POST['add_to_cart']) && isset($_POST['product_id'])) {
 
 $q = get_param('q');
 $sort = get_param('sort'); // price_asc | price_desc | newest
+$category = get_param('category');
 
 $where = " WHERE p.is_active=1 ";
 if ($q !== '') {
     $q_s = mysqli_real_escape_string($conn, $q);
     $where .= " AND (p.name LIKE '%$q_s%' OR p.description LIKE '%$q_s%') ";
+}
+if ($category !== '') {
+    $category_id = mysqli_real_escape_string($conn, $category);
+    $where .= " AND p.category_id = '$category_id' ";
 }
 
 $order = " ORDER BY p.id DESC ";
@@ -150,6 +155,22 @@ if (isset($_POST['add_to_cart']) && isset($_POST['product_id'])) {
                     <div style="display: flex;">
                         <input type="text" name="q" class="form-control" placeholder="Search products..." value="<?php echo e($q); ?>">
                     </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group mb-0">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-control">
+                        <option value="">All Categories</option>
+                        <?php
+                        $cat_query = "SELECT id, name FROM categories ORDER BY name";
+                        $cat_result = mysqli_query($conn, $cat_query);
+                        while ($category = mysqli_fetch_assoc($cat_result)) {
+                            $selected = isset($_GET['category']) && $_GET['category'] == $category['id'] ? 'selected' : '';
+                            echo '<option value="'.$category['id'].'" '.$selected.'>'.$category['name'].'</option>';
+                        }
+                        ?>
+                    </select>
                 </div>
             </div>
             <div class="col">

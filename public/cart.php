@@ -48,7 +48,10 @@ if (!empty($_SESSION['cart'])) {
             $row['line_total'] = $qty * (float)$row['price'];
             $row['out_of_stock'] = ((int)$row['stock'] <= 0);
             $items[] = $row;
-            $subtotal += $row['line_total'];
+            // Only add to subtotal if product is in stock
+            if (!$row['out_of_stock']) {
+                $subtotal += $row['line_total'];
+            }
         }
     }
 }
@@ -94,8 +97,11 @@ $total = $subtotal; // no shipping/tax for simplicity
                 // Update line total display
                 row.querySelector('.line-total').textContent = '₹' + lineTotal.toFixed(2);
                 
-                // Add to subtotal
-                subtotal += lineTotal;
+                // Add to subtotal only if product is in stock
+                const isOutOfStock = row.querySelector('span[style*="color:red"]') !== null;
+                if (!isOutOfStock) {
+                    subtotal += lineTotal;
+                }
             });
             
             // Update subtotal and total displays
@@ -190,7 +196,19 @@ $total = $subtotal; // no shipping/tax for simplicity
                 <div><strong>Total:</strong> <span class="total-value">₹<?php echo e(number_format((float)$total,2)); ?></span></div>
                 <div class="row">
                     <div class="col"><button type="submit" style="display: none;">Update</button></div>
-                    <div class="col"><a href="/Ecomme/public/checkout.php"><button type="button" <?php echo empty($items)?'disabled':''; ?>>Checkout</button></a></div>
+                    <div class="col">
+                        <?php 
+                        // Check if there are any in-stock items
+                        $has_in_stock_items = false;
+                        foreach ($items as $item) {
+                            if (!$item['out_of_stock']) {
+                                $has_in_stock_items = true;
+                                break;
+                            }
+                        }
+                        ?>
+                        <a href="/Ecomme/public/checkout.php"><button type="button" <?php echo (empty($items) || !$has_in_stock_items) ? 'disabled' : ''; ?>>Checkout</button></a>
+                    </div>
                 </div>
             </div>
         </div>

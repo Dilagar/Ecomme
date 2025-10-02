@@ -47,11 +47,127 @@ require_once __DIR__ . '/../lib/helpers.php';
             
             <div class="search-bar">
                 <form class="search-form" action="/Ecomme/public/index.php" method="get">
-                    <input type="text" name="search" class="search-input" placeholder="Search for products...">
+                    <input type="text" name="q" id="search-input" class="search-input" placeholder="Search for products..." autocomplete="off">
                     <button type="submit" class="search-button">
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
+                <div id="search-results" class="search-results-dropdown"></div>
+            </div>
+            
+            <style>
+                .search-results-dropdown {
+                    position: absolute;
+                    width: 100%;
+                    max-height: 400px;
+                    overflow-y: auto;
+                    background: white;
+                    border: 1px solid #ddd;
+                    border-radius: 0 0 4px 4px;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                    z-index: 1000;
+                    display: none;
+                }
+                .search-result-item {
+                    padding: 10px 15px;
+                    border-bottom: 1px solid #eee;
+                    display: flex;
+                    align-items: center;
+                    cursor: pointer;
+                }
+                .search-result-item:hover {
+                    background-color: #f9f9f9;
+                }
+                .search-result-image {
+                    width: 40px;
+                    height: 40px;
+                    object-fit: cover;
+                    margin-right: 10px;
+                }
+                .search-result-info {
+                    flex: 1;
+                }
+                .search-result-name {
+                    font-weight: 500;
+                    margin-bottom: 3px;
+                }
+                .search-result-price {
+                    color: #e44d26;
+                    font-weight: 600;
+                }
+                .search-result-category {
+                    font-size: 12px;
+                    color: #777;
+                }
+            </style>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const searchInput = document.getElementById('search-input');
+                    const searchResults = document.getElementById('search-results');
+                    
+                    // Add event listener for input changes
+                    searchInput.addEventListener('input', function() {
+                        const letter = this.value.trim();
+                        
+                        // Clear results if input is empty
+                        if (letter === '') {
+                            searchResults.style.display = 'none';
+                            searchResults.innerHTML = '';
+                            return;
+                        }
+                        
+                        // Fetch products starting with the letter
+                        fetch(`/Ecomme/public/search_api.php?letter=${encodeURIComponent(letter)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                searchResults.innerHTML = '';
+                                
+                                if (data.success && data.products.length > 0) {
+                                    // Display search results
+                                    data.products.forEach(product => {
+                                        const resultItem = document.createElement('div');
+                                        resultItem.className = 'search-result-item';
+                                        resultItem.innerHTML = `
+                                            <img src="/Ecomme/uploads/${product.image}" alt="${product.name}" class="search-result-image" onerror="this.src='/Ecomme/assets/placeholder.png'">
+                                            <div class="search-result-info">
+                                                <div class="search-result-name">${product.name}</div>
+                                                <div class="search-result-price">₹${parseFloat(product.price).toFixed(2)}</div>
+                                                <div class="search-result-category">${product.category}</div>
+                                            </div>
+                                        `;
+                                        
+                                        // Add click event to navigate to product page
+                                        resultItem.addEventListener('click', function() {
+                                            window.location.href = `/Ecomme/public/product.php?slug=${product.slug}`;
+                                        });
+                                        
+                                        searchResults.appendChild(resultItem);
+                                    });
+                                    
+                                    searchResults.style.display = 'block';
+                                } else {
+                                    // No results found
+                                    const noResults = document.createElement('div');
+                                    noResults.className = 'search-result-item';
+                                    noResults.textContent = 'No products found';
+                                    searchResults.appendChild(noResults);
+                                    searchResults.style.display = 'block';
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching search results:', error);
+                            });
+                    });
+                    
+                    // Hide search results when clicking outside
+                    document.addEventListener('click', function(event) {
+                        if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+                            searchResults.style.display = 'none';
+                        }
+                    });
+                });
+            </script>
             </div>
             
             <div class="header-actions">

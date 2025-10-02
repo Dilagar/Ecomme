@@ -36,9 +36,48 @@ if (is_post()) {
         </form>
         <p>Don't have an account? <a href="/Ecomme/public/register.php">Register</a></p>
         <hr>
-        <form method="post" action="#" onsubmit="alert('Google OAuth placeholder'); return false;">
-            <button type="submit">Continue with Google</button>
-        </form>
+        <?php
+        // Check if Google OAuth is configured
+        $google_enabled = false;
+        $google_login_url = '#';
+        
+        if (file_exists(__DIR__ . '/../config/google_auth.php') && file_exists(__DIR__ . '/../vendor/autoload.php')) {
+            try {
+                require_once __DIR__ . '/../config/google_auth.php';
+                require_once __DIR__ . '/../vendor/autoload.php';
+                
+                // Initialize the Google Client
+                $client = new Google_Client();
+                $client->setClientId(GOOGLE_CLIENT_ID);
+                $client->setClientSecret(GOOGLE_CLIENT_SECRET);
+                $client->setRedirectUri(GOOGLE_REDIRECT_URI);
+                $client->addScope(GOOGLE_SCOPES);
+                
+                // Create the Google login URL
+                $google_login_url = $client->createAuthUrl();
+                $google_enabled = true;
+            } catch (Exception $e) {
+                // Google OAuth is not properly configured
+                $google_enabled = false;
+            }
+        }
+        ?>
+        <a href="#" 
+           class="google-btn" 
+           style="display:block;text-align:center;padding:10px;background:#4285F4;color:white;text-decoration:none;border-radius:4px;margin-bottom:10px;"
+           onclick="googleLogin(); return false;">
+            Continue with Google
+        </a>
+        
+        <script>
+        function googleLogin() {
+            <?php if ($google_enabled): ?>
+            window.location.href = "<?php echo $google_login_url; ?>";
+            <?php else: ?>
+            alert("To enable Google login, you need to set up Google OAuth credentials in the config/google_auth.php file. Please replace YOUR_CLIENT_ID and YOUR_CLIENT_SECRET with actual values from the Google Cloud Console.");
+            <?php endif; ?>
+        }
+        </script>
     </div>
     
 </div>
