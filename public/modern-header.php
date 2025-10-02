@@ -11,6 +11,7 @@ require_once __DIR__ . '/../lib/helpers.php';
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/Ecomme/assets/styles.css">
     <link rel="stylesheet" href="/Ecomme/assets/modern-styles.css">
+    <link rel="stylesheet" href="/Ecomme/public/assets/notifications.css">
 </head>
 <body>
 

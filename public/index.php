@@ -223,13 +223,9 @@ if (isset($_POST['add_to_cart']) && isset($_POST['product_id'])) {
                         </div>
                         
                         <?php if ($row['stock'] > 0): ?>
-                            <form method="post" action="/Ecomme/public/index.php">
-                                <input type="hidden" name="product_id" value="<?php echo $row['id']; ?>">
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" name="add_to_cart" class="add-to-cart">
-                                    <i class="fas fa-shopping-cart"></i> Add to Cart
-                                </button>
-                            </form>
+                            <button type="button" onclick="addToCart(<?php echo $row['id']; ?>)" class="add-to-cart">
+                                <i class="fas fa-shopping-cart"></i> Add to Cart
+                            </button>
                         <?php else: ?>
                             <button type="button" class="add-to-cart" disabled style="background-color: var(--gray-color);">
                                 Out of Stock
@@ -248,7 +244,37 @@ if (isset($_POST['add_to_cart']) && isset($_POST['product_id'])) {
     </div>
 <?php include __DIR__ . '/modern-footer.php'; ?>
 
+<div id="notification-container"></div>
+
 <script>
+// Notification system
+function showNotification(message, type = 'success') {
+    const container = document.getElementById('notification-container');
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    
+    const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
+    
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${icon} notification-icon"></i>
+            <span>${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    container.appendChild(notification);
+    
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'fadeOut 0.5s forwards';
+        setTimeout(() => {
+            notification.remove();
+        }, 500);
+    }, 3000);
+}
+
+// Add to wishlist function
 function addToWishlist(productId) {
     fetch('/Ecomme/public/wishlist_ajax.php', {
         method: 'POST',
@@ -260,13 +286,37 @@ function addToWishlist(productId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('Product added to wishlist!');
+            showNotification('Product added to wishlist!');
         } else {
-            alert(data.message);
+            showNotification(data.message, 'error');
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        showNotification('Failed to add to wishlist', 'error');
+    });
+}
+
+// Add to cart function
+function addToCart(productId) {
+    fetch('/Ecomme/public/cart_ajax.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'product_id=' + productId + '&quantity=1'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Product added to cart!');
+        } else {
+            showNotification(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Failed to add to cart', 'error');
     });
 }
 </script>
