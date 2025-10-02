@@ -34,7 +34,7 @@ if ($action === 'update' && is_post()) {
     $phone = mysqli_real_escape_string($conn, post_param('phone'));
     $is_default = isset($_POST['is_default']) ? 1 : 0;
     if ($is_default) { mysqli_query($conn, "UPDATE addresses SET is_default=0 WHERE user_id=$user_id"); }
-    mysqli_query($conn, "UPDATE addresses SET full_name='$full_name', line1='$line1', line2='$line2', city='$city', state='$state', postal_code='$postal_code', country='$country', phone='$phone', is_default=$is_default WHERE id=$id AND user_id=$user_id LIMIT 1");
+    mysqli_query($conn, "UPDATE addresses SET name='$full_name', address_line1='$line1', address_line2='$line2', city='$city', state='$state', postal_code='$postal_code', country='$country', phone='$phone', is_default=$is_default WHERE id=$id AND user_id=$user_id LIMIT 1");
     redirect('/Ecomme/public/addresses.php');
 }
 
