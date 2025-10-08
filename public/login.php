@@ -51,7 +51,7 @@ if (is_post()) {
                 $client->setClientId(GOOGLE_CLIENT_ID);
                 $client->setClientSecret(GOOGLE_CLIENT_SECRET);
                 $client->setRedirectUri(GOOGLE_REDIRECT_URI);
-                $client->addScope(GOOGLE_SCOPES);
+                $client->setScopes(GOOGLE_SCOPES);
                 
                 // Create the Google login URL
                 $google_login_url = $client->createAuthUrl();
