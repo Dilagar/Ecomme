@@ -19,7 +19,7 @@ $current_page = basename($_SERVER['SCRIPT_NAME']);
         <a href="/Ecomme/admin/orders.php" class="<?php echo ($current_page == 'orders.php') ? 'active' : ''; ?>">
             Orders
         </a>
-        <a href="/Ecomme/public/index.php" target="_blank">
+        <a href="http://localhost/Ecomme/public/index.php" target="_blank">
             View Store
         </a>
         <a href="/Ecomme/admin/logout.php" class="logout-btn">

@@ -65,12 +65,28 @@ if (isset($_GET['code'])) {
         }
     }
 
-    // Set session and redirect
+    // Set session
     $_SESSION['user_id'] = $user_id;
     $_SESSION['user_name'] = $name;
     $_SESSION['user_email'] = $email;
     $_SESSION['logged_in'] = true;
-    
+
+    // Fetch fresh user row to determine onboarding needs
+    $user_check_res = mysqli_query($conn, "SELECT phone, password_hash FROM users WHERE id=".(int)$user_id." LIMIT 1");
+    $user_check = $user_check_res ? mysqli_fetch_assoc($user_check_res) : null;
+
+    // Require surname (last name) first
+    $hasSurname = (strpos(trim((string)$name), ' ') !== false);
+    if (!$hasSurname) {
+        redirect('/Ecomme/public/complete_profile.php?next=mobile');
+    }
+
+    // First-time flow: if no mobile linked or no password set, redirect to mobile linking
+    if (!$user_check || empty($user_check['phone']) || empty($user_check['password_hash'])) {
+        redirect('/Ecomme/public/mobile_register.php?next=index');
+    }
+
+    // Otherwise go directly to dashboard
     $_SESSION['success'] = 'Successfully logged in with Google!';
     redirect('/Ecomme/public/dashboard.php');
 } else {

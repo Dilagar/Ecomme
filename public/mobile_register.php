@@ -7,6 +7,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $linkingMobile = user_logged_in();
+$next = get_param('next');
 $error = '';
 $success = '';
 
@@ -26,6 +27,9 @@ if (is_post()) {
             $res = user_link_mobile($_SESSION['user_id'], $phone, $password);
             if ($res === true) {
                 $success = 'Mobile number linked successfully.';
+                if ($next === 'index') {
+                    redirect('/Ecomme/public/index.php');
+                }
                 redirect('/Ecomme/public/dashboard.php');
             } else {
                 $error = $res;
