@@ -3,8 +3,8 @@
 ## Admin Access Information
 - **Admin Login Path**: `/Ecomme/admin/index.php`
 - **Default Admin Credentials**:
-  - Email: admin@example.com
-  - Password: admin123
+  - Email: admin1@example.com
+  - Password: admin12345
   
 ## Project Navigation Guide
 
