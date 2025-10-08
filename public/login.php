@@ -10,8 +10,15 @@ if (is_post()) {
     $password = post_param('password');
     $password_hash = post_param('password_hash');
     
-    if (!empty($phone) && !empty($password_hash)) {
-        // Phone + password_hash login
+    if (!empty($phone) && !empty($password)) {
+        // Mobile number + password login
+        if (user_login_mobile($phone, $password)) {
+            redirect('/Ecomme/public/index.php');
+        } else {
+            $error = 'Invalid mobile number or password';
+        }
+    } else if (!empty($phone) && !empty($password_hash)) {
+        // Phone + password_hash login (legacy)
         if (user_login_by_phone($phone, $password_hash)) {
             redirect('/Ecomme/public/index.php');
         } else {
@@ -25,7 +32,7 @@ if (is_post()) {
             $error = 'Invalid credentials';
         }
     } else {
-        $error = 'Please provide either email/password or phone/password_hash';
+        $error = 'Please provide either email/password or mobile number/password';
     }
 }
 ?>
@@ -40,14 +47,32 @@ if (is_post()) {
 
 <div class="container" style="max-width:480px;margin:40px auto;">
     <div class="card">
-        <h2>Login</h2>
+        <!-- <h2>Login</h2>
         <?php if ($error): ?><div class="alert alert-error"><?php echo e($error); ?></div><?php endif; ?>
         <form method="post">
-            <label>Email</label>
-            <input type="email" name="email" required>
-            <label>Password</label>
-            <input type="password" name="password" required>
+            <div style="margin-bottom: 20px;">
+                <label>Login with Email or Mobile Number</label>
+                <input type="text" name="email" placeholder="Email or Mobile Number" required>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
             <button type="submit">Login</button>
+        </form> -->
+        
+        <hr style="margin: 20px 0;">
+        <h3 style="text-align: center; margin-bottom: 15px;">Login with Mobile Number</h3>
+        <form method="post">
+            <div style="margin-bottom: 20px;">
+                <label>Mobile Number</label>
+                <input type="tel" name="phone" placeholder="Enter your mobile number" required>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit">Login with Mobile</button>
         </form>
         <p>Don't have an account? <a href="/Ecomme/public/register.php">Register</a></p>
         <hr>

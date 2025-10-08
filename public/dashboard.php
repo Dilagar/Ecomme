@@ -5,6 +5,37 @@ require_once __DIR__ . '/../lib/auth.php';
 require_user();
 $user_id = (int)$_SESSION['user_id'];
 
+// Fetch current user to know if phone is already linked
+$user_res = mysqli_query($conn, "SELECT id,name,email,phone FROM users WHERE id=".$user_id." LIMIT 1");
+$current_user = $user_res ? mysqli_fetch_assoc($user_res) : null;
+$link_error = '';
+$link_success = '';
+
+// Handle link mobile number submission
+if (is_post() && isset($_POST['action']) && $_POST['action'] === 'link_mobile') {
+    $phone = post_param('phone');
+    $password = post_param('password');
+    $confirm = post_param('confirm');
+    
+    if (empty($phone) || empty($password) || empty($confirm)) {
+        $link_error = 'All fields are required';
+    } elseif ($password !== $confirm) {
+        $link_error = 'Passwords do not match';
+    } elseif (strlen($password) < 8) {
+        $link_error = 'Password must be at least 8 characters long';
+    } else {
+        $result = user_link_mobile($user_id, $phone, $password);
+        if ($result === true) {
+            $link_success = 'Mobile number linked successfully. You can now login via mobile + password.';
+            // Refresh user data
+            $user_res = mysqli_query($conn, "SELECT id,name,email,phone FROM users WHERE id=".$user_id." LIMIT 1");
+            $current_user = $user_res ? mysqli_fetch_assoc($user_res) : $current_user;
+        } else {
+            $link_error = $result;
+        }
+    }
+}
+
 $orders = mysqli_query($conn, "SELECT * FROM orders WHERE user_id=$user_id ORDER BY id ASC");
 $wishlist_ids = isset($_SESSION['wishlist']) ? array_keys($_SESSION['wishlist']) : [];
 $wishlist = [];
@@ -59,6 +90,35 @@ $addresses = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id
             </div>
         </div>
         <div class="col">
+            <?php if (!empty($link_error)): ?>
+                <div class="alert alert-error" style="margin-bottom:15px;"><?php echo e($link_error); ?></div>
+            <?php endif; ?>
+            <?php if (!empty($link_success)): ?>
+                <div class="alert alert-success" style="margin-bottom:15px;"><?php echo e($link_success); ?></div>
+            <?php endif; ?>
+            
+            <?php if (!$current_user || empty($current_user['phone'])): ?>
+            <div class="card" style="margin-bottom:20px;">
+                <h3>Link Your Mobile Number</h3>
+                <p style="color:#555;">Add a mobile number and password to sign in without Google next time.</p>
+                <form method="post">
+                    <input type="hidden" name="action" value="link_mobile">
+                    <div class="form-group">
+                        <label for="phone">Mobile Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Enter your mobile number" pattern="[0-9]{10,15}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Set Password</label>
+                        <input type="password" id="password" name="password" minlength="8" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm">Confirm Password</label>
+                        <input type="password" id="confirm" name="confirm" minlength="8" required>
+                    </div>
+                    <button type="submit" class="btn">Link Mobile</button>
+                </form>
+            </div>
+            <?php endif; ?>
             <div class="card">
                 <h3>Wishlist</h3>
                 <table>
