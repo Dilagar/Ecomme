@@ -6,33 +6,17 @@ if (user_logged_in()) { redirect('/Ecomme/public/index.php'); }
 $error = '';
 if (is_post()) {
     $email = post_param('email');
-    $phone = post_param('phone');
     $password = post_param('password');
-    $password_hash = post_param('password_hash');
     
-    if (!empty($phone) && !empty($password)) {
-        // Mobile number + password login
-        if (user_login_mobile($phone, $password)) {
-            redirect('/Ecomme/public/index.php');
-        } else {
-            $error = 'Invalid mobile number or password';
-        }
-    } else if (!empty($phone) && !empty($password_hash)) {
-        // Phone + password_hash login (legacy)
-        if (user_login_by_phone($phone, $password_hash)) {
-            redirect('/Ecomme/public/index.php');
-        } else {
-            $error = 'Invalid phone or password hash';
-        }
-    } else if (!empty($email) && !empty($password)) {
+    if (!empty($email) && !empty($password)) {
         // Email + password login
         if (user_login($email, $password)) {
             redirect('/Ecomme/public/index.php');
         } else {
-            $error = 'Invalid credentials';
+            $error = 'Invalid email or password';
         }
     } else {
-        $error = 'Please provide either email/password or mobile number/password';
+        $error = 'Please enter email and password';
     }
 }
 ?>
@@ -47,34 +31,23 @@ if (is_post()) {
 
 <div class="container" style="max-width:480px;margin:40px auto;">
     <div class="card">
-        <!-- <h2>Login</h2>
+        <h2>Login</h2>
         <?php if ($error): ?><div class="alert alert-error"><?php echo e($error); ?></div><?php endif; ?>
         <form method="post">
             <div style="margin-bottom: 20px;">
-                <label>Login with Email or Mobile Number</label>
-                <input type="text" name="email" placeholder="Email or Mobile Number" required>
+                <label>Email</label>
+                <input type="email" name="email" required>
             </div>
             <div style="margin-bottom: 20px;">
                 <label>Password</label>
                 <input type="password" name="password" required>
             </div>
             <button type="submit">Login</button>
-        </form> -->
-        
-        <hr style="margin: 20px 0;">
-        <h3 style="text-align: center; margin-bottom: 15px;">Login with Mobile Number</h3>
-        <form method="post">
-            <div style="margin-bottom: 20px;">
-                <label>Mobile Number</label>
-                <input type="tel" name="phone" placeholder="Enter your mobile number" required>
-            </div>
-            <div style="margin-bottom: 20px;">
-                <label>Password</label>
-                <input type="password" name="password" required>
-            </div>
-            <button type="submit">Login with Mobile</button>
         </form>
         <p>Don't have an account? <a href="/Ecomme/public/register.php">Register</a></p>
+        <p style="margin-top:8px;">
+            Prefer mobile? <a href="/Ecomme/public/mobile_login.php">Mobile Login</a> or <a href="/Ecomme/public/mobile_register.php">Mobile Register</a>
+        </p>
         <hr>
         <?php
         // Check if Google OAuth is configured

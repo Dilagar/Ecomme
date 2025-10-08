@@ -61,6 +61,10 @@ $addresses = mysqli_query($conn, "SELECT * FROM addresses WHERE user_id=$user_id
     <div><a href="/Ecomme/public/index.php"><strong>MyShop</strong></a></div>
     <div>
         <a href="/Ecomme/public/addresses.php">Addresses</a>
+         | 
+        <a href="/Ecomme/public/mobile_register.php">Mobile Register</a>
+         | 
+        <a href="/Ecomme/public/mobile_login.php">Mobile Login</a>
     </div>
     
 </div>

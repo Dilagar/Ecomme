@@ -6,53 +6,82 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-if (user_logged_in()) { redirect('/Ecomme/public/index.php'); }
+// If already logged in, allow mobile linking mode to proceed; otherwise redirect
+$mode = get_param('mode');
+$linkingMobile = false;
+if (user_logged_in()) {
+    if ($mode === 'mobile') {
+        $linkingMobile = true;
+    } else {
+        redirect('/Ecomme/public/index.php');
+    }
+}
 
 $error = '';
 $success = '';
+$default_mode = ($mode === 'mobile') ? 'mobile' : 'email';
 if (is_post()) {
     $name = post_param('name');
     $email = post_param('email');
     $phone = post_param('phone');
     $password = post_param('password');
     $confirm = post_param('confirm');
-    $registration_type = post_param('registration_type', 'email');
+    $registration_type = post_param('registration_type', $default_mode);
     
     // Enhanced validation
-    if (empty($name) || empty($password) || empty($confirm)) {
-        $error = 'Name, password and confirm password are required';
-    } elseif (strlen($password) < 8) {
-        $error = 'Password must be at least 8 characters long';
-    } elseif ($password !== $confirm) {
-        $error = 'Passwords do not match';
-    } elseif ($registration_type === 'email' && (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL))) {
-        $error = 'Valid email is required for email registration';
-    } elseif ($registration_type === 'mobile' && empty($phone)) {
-        $error = 'Mobile number is required for mobile registration';
-    } else {
-        if ($registration_type === 'mobile') {
-            // Mobile registration
-            $res = user_register_mobile($name, $phone, $password);
+    if ($linkingMobile) {
+        // Linking mobile to existing logged-in account
+        if (empty($phone) || empty($password) || empty($confirm)) {
+            $error = 'Mobile, password and confirm password are required';
+        } elseif (strlen($password) < 8) {
+            $error = 'Password must be at least 8 characters long';
+        } elseif ($password !== $confirm) {
+            $error = 'Passwords do not match';
+        } else {
+            $res = user_link_mobile($_SESSION['user_id'], $phone, $password);
             if ($res === true) {
-                $success = 'Mobile registration successful. You can now login.';
-                // Auto-login after registration
-                if (user_login_mobile($phone, $password)) {
-                    redirect('/Ecomme/public/index.php');
-                }
+                $success = 'Mobile number linked successfully.';
+                redirect('/Ecomme/public/dashboard.php');
             } else {
                 $error = $res;
             }
+        }
+    } else {
+        if (empty($name) || empty($password) || empty($confirm)) {
+            $error = 'Name, password and confirm password are required';
+        } elseif (strlen($password) < 8) {
+            $error = 'Password must be at least 8 characters long';
+        } elseif ($password !== $confirm) {
+            $error = 'Passwords do not match';
+        } elseif ($registration_type === 'email' && (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL))) {
+            $error = 'Valid email is required for email registration';
+        } elseif ($registration_type === 'mobile' && empty($phone)) {
+            $error = 'Mobile number is required for mobile registration';
         } else {
-            // Email registration
-            $res = user_register($name, $email, $password);
-            if ($res === true) {
-                $success = 'Email registration successful. You can now login.';
-                // Auto-login after registration
-                if (user_login($email, $password)) {
-                    redirect('/Ecomme/public/index.php');
+            if ($registration_type === 'mobile') {
+                // Mobile registration
+                $res = user_register_mobile($name, $phone, $password);
+                if ($res === true) {
+                    $success = 'Mobile registration successful. You can now login.';
+                    // Auto-login after registration
+                    if (user_login_mobile($phone, $password)) {
+                        redirect('/Ecomme/public/index.php');
+                    }
+                } else {
+                    $error = $res;
                 }
             } else {
-                $error = $res;
+                // Email registration
+                $res = user_register($name, $email, $password);
+                if ($res === true) {
+                    $success = 'Email registration successful. You can now login.';
+                    // Auto-login after registration
+                    if (user_login($email, $password)) {
+                        redirect('/Ecomme/public/index.php');
+                    }
+                } else {
+                    $error = $res;
+                }
             }
         }
     }
@@ -140,37 +169,41 @@ if (is_post()) {
 <body>
 <div class="register-container">
     <div class="register-header">
-        <h2>Create Your Account</h2>
-        <p>Join our community and start shopping today</p>
+        <h2><?php echo $linkingMobile ? 'Link Your Mobile Number' : 'Create Your Account'; ?></h2>
+        <p><?php echo $linkingMobile ? 'Add a mobile number and password to your existing account' : 'Join our community and start shopping today'; ?></p>
     </div>
     
     <?php if ($error): ?><div class="alert alert-error"><?php echo e($error); ?></div><?php endif; ?>
     <?php if ($success): ?><div class="alert alert-success"><?php echo e($success); ?></div><?php endif; ?>
     
+    <?php if (!$linkingMobile): ?>
     <!-- Registration Type Toggle -->
     <div style="margin-bottom: 20px; text-align: center;">
-        <!-- <label style="margin-right: 20px;">
-            <input type="radio" name="registration_type" value="email" checked onchange="toggleRegistrationType()"> Email Registration
-        </label> -->
+        <!-- Optional email mode could be added here if desired -->
         <label>
-            <input type="radio" name="registration_type" value="mobile" onchange="toggleRegistrationType()"> Mobile Registration
+            <input type="radio" name="registration_type" value="mobile" onchange="toggleRegistrationType()" <?php echo ($default_mode==='mobile'?'checked':''); ?>> Mobile Registration
         </label>
     </div>
+    <?php endif; ?>
 
     <form method="post" id="registrationForm">
-        <input type="hidden" name="registration_type" id="registration_type" value="email">
+        <input type="hidden" name="registration_type" id="registration_type" value="<?php echo e($linkingMobile ? 'mobile' : $default_mode); ?>">
         
+        <?php if (!$linkingMobile): ?>
         <div class="form-group">
             <label for="name">Full Name</label>
             <input type="text" id="name" name="name" required value="<?php echo isset($_POST['name']) ? e($_POST['name']) : ''; ?>">
         </div>
+        <?php endif; ?>
         
-        <div class="form-group" id="emailGroup">
+        <?php if (!$linkingMobile): ?>
+        <div class="form-group" id="emailGroup" style="<?php echo ($default_mode==='mobile'?'display:none;':''); ?>">
             <label for="email">Email Address</label>
             <input type="email" id="email" name="email" value="<?php echo isset($_POST['email']) ? e($_POST['email']) : ''; ?>">
         </div>
+        <?php endif; ?>
         
-        <div class="form-group" id="phoneGroup" style="display: none;">
+        <div class="form-group" id="phoneGroup" style="<?php echo ($linkingMobile || $default_mode==='mobile'?'':'display: none;'); ?>">
             <label for="phone">Mobile Number</label>
             <input type="tel" id="phone" name="phone" placeholder="Enter your mobile number (e.g., 1234567890)" value="<?php echo isset($_POST['phone']) ? e($_POST['phone']) : ''; ?>" pattern="[0-9]{10,15}" title="Please enter a valid mobile number (10-15 digits)">
             <div class="password-requirements">Mobile number must be 10-15 digits</div>
@@ -192,28 +225,40 @@ if (is_post()) {
     
     <script>
     function toggleRegistrationType() {
-        const emailRadio = document.querySelector('input[value="email"]');
-        const mobileRadio = document.querySelector('input[value="mobile"]');
+        const selectedRadio = document.querySelector('input[name="registration_type"]:checked');
         const emailGroup = document.getElementById('emailGroup');
         const phoneGroup = document.getElementById('phoneGroup');
         const emailInput = document.getElementById('email');
         const phoneInput = document.getElementById('phone');
         const registrationType = document.getElementById('registration_type');
         
-        if (emailRadio.checked) {
+        const mode = selectedRadio ? selectedRadio.value : registrationType.value;
+        
+        if (mode === 'email') {
             emailGroup.style.display = 'block';
             phoneGroup.style.display = 'none';
-            emailInput.required = true;
-            phoneInput.required = false;
+            if (emailInput) emailInput.required = true;
+            if (phoneInput) phoneInput.required = false;
             registrationType.value = 'email';
         } else {
             emailGroup.style.display = 'none';
             phoneGroup.style.display = 'block';
-            emailInput.required = false;
-            phoneInput.required = true;
+            if (emailInput) emailInput.required = false;
+            if (phoneInput) phoneInput.required = true;
             registrationType.value = 'mobile';
         }
     }
+    
+    // Initialize form display based on default mode on load
+    document.addEventListener('DOMContentLoaded', function(){
+        // Force mobile mode when linking mobile while logged-in
+        var linking = <?php echo $linkingMobile ? 'true' : 'false'; ?>;
+        if (linking) {
+            var hidden = document.getElementById('registration_type');
+            if (hidden) hidden.value = 'mobile';
+        }
+        toggleRegistrationType();
+    });
     
     // Mobile number validation
     function validateMobileNumber(phone) {
