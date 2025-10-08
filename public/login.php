@@ -45,9 +45,9 @@ if (is_post()) {
             <button type="submit">Login</button>
         </form>
         <p>Don't have an account? <a href="/Ecomme/public/register.php">Register</a></p>
-        <p style="margin-top:8px;">
+        <!-- <p style="margin-top:8px;">
             Prefer mobile? <a href="/Ecomme/public/mobile_login.php">Mobile Login</a> or <a href="/Ecomme/public/mobile_register.php">Mobile Register</a>
-        </p>
+        </p> -->
         <hr>
         <?php
         // Check if Google OAuth is configured
