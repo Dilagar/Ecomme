@@ -14,11 +14,12 @@
 
 // Google OAuth Client ID and Secret
 // Replace these with your actual credentials from Google Cloud Console
-define('GOOGLE_CLIENT_ID', 'YOUR_CLIENT_ID');
-define('GOOGLE_CLIENT_SECRET', 'YOUR_CLIENT_SECRET');
+define('GOOGLE_CLIENT_ID','845909708201-p0hoaanu3d2h1u61r3g7s0jg7mf6ket9.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_SECRET','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');
+
 
 // Redirect URI after Google authentication
-define('GOOGLE_REDIRECT_URI', 'http://localhost:8000/google_callback.php');
+define('GOOGLE_REDIRECT_URI', 'http://localhost/Ecomme/public/google_callback.php');
 
 // Required scopes for user information
 define('GOOGLE_SCOPES', [

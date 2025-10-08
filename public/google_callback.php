@@ -4,19 +4,28 @@ require_once __DIR__ . '/../config/google_auth.php';
 require_once __DIR__ . '/../lib/helpers.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Initialize the Google Client
 $client = new Google_Client();
 $client->setClientId(GOOGLE_CLIENT_ID);
 $client->setClientSecret(GOOGLE_CLIENT_SECRET);
 $client->setRedirectUri(GOOGLE_REDIRECT_URI);
-$client->addScope(GOOGLE_SCOPES);
+$client->setScopes(GOOGLE_SCOPES);
 
 // Handle the OAuth 2.0 server response
 if (isset($_GET['code'])) {
     // Exchange authorization code for an access token
     $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+    
+    // Check for errors in token response
+    if (isset($token['error'])) {
+        $_SESSION['error'] = 'Google authentication failed: ' . $token['error'];
+        redirect('/Ecomme/public/login.php');
+    }
+    
     $client->setAccessToken($token);
 
     // Get user profile information
@@ -45,13 +54,13 @@ if (isset($_GET['code'])) {
     } else {
         // Create new user
         $password = password_hash(bin2hex(random_bytes(10)), PASSWORD_DEFAULT); // Random password
-        $insert_query = "INSERT INTO users (name, email, password, google_id, created_at) 
-                         VALUES ('$name', '$email', '$password', '$google_id', NOW())";
+        $insert_query = "INSERT INTO users (name, email, phone, password_hash, google_id, created_at) 
+                         VALUES ('$name', '$email', NULL, '$password', '$google_id', NOW())";
         
         if (mysqli_query($conn, $insert_query)) {
             $user_id = mysqli_insert_id($conn);
         } else {
-            set_flash_message('error', 'Failed to create account. Please try again.');
+            $_SESSION['error'] = 'Failed to create account. Please try again.';
             redirect('/Ecomme/public/login.php');
         }
     }
@@ -62,10 +71,10 @@ if (isset($_GET['code'])) {
     $_SESSION['user_email'] = $email;
     $_SESSION['logged_in'] = true;
     
-    set_flash_message('success', 'Successfully logged in with Google!');
+    $_SESSION['success'] = 'Successfully logged in with Google!';
     redirect('/Ecomme/public/dashboard.php');
 } else {
     // If no authorization code, redirect to login page
-    set_flash_message('error', 'Google authentication failed. Please try again.');
+    $_SESSION['error'] = 'Google authentication failed. Please try again.';
     redirect('/Ecomme/public/login.php');
 }

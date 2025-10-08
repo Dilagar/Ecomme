@@ -6,11 +6,26 @@ if (user_logged_in()) { redirect('/Ecomme/public/index.php'); }
 $error = '';
 if (is_post()) {
     $email = post_param('email');
+    $phone = post_param('phone');
     $password = post_param('password');
-    if (user_login($email, $password)) {
-        redirect('/Ecomme/public/index.php');
+    $password_hash = post_param('password_hash');
+    
+    if (!empty($phone) && !empty($password_hash)) {
+        // Phone + password_hash login
+        if (user_login_by_phone($phone, $password_hash)) {
+            redirect('/Ecomme/public/index.php');
+        } else {
+            $error = 'Invalid phone or password hash';
+        }
+    } else if (!empty($email) && !empty($password)) {
+        // Email + password login
+        if (user_login($email, $password)) {
+            redirect('/Ecomme/public/index.php');
+        } else {
+            $error = 'Invalid credentials';
+        }
     } else {
-        $error = 'Invalid credentials';
+        $error = 'Please provide either email/password or phone/password_hash';
     }
 }
 ?>
@@ -62,25 +77,18 @@ if (is_post()) {
             }
         }
         ?>
-        <div class="social-login">
-            <a href="#" 
-               class="google-btn" 
-               style="display:flex;align-items:center;justify-content:center;padding:10px;background:#fff;color:#757575;text-decoration:none;border-radius:4px;margin-bottom:10px;border:1px solid #ddd;font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,0.1);"
-               onclick="googleLogin(); return false;">
-                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style="width:18px;height:18px;margin-right:10px;">
-                Sign in with Google
-            </a>
-        </div>
-        
-        <script>
-        function googleLogin() {
-            <?php if ($google_enabled): ?>
-            window.location.href = "<?php echo $google_login_url; ?>";
-            <?php else: ?>
-            alert("To enable Google login, you need to set up Google OAuth credentials in the config/google_auth.php file. Please replace YOUR_CLIENT_ID and YOUR_CLIENT_SECRET with actual values from the Google Cloud Console.");
-            <?php endif; ?>
-        }
-        </script>
+		<div class="social-login">
+			<?php if ($google_enabled): ?>
+			<a href="<?php echo $google_login_url; ?>" 
+			   class="google-btn" 
+			   style="display:flex;align-items:center;justify-content:center;padding:10px;background:#fff;color:#757575;text-decoration:none;border-radius:4px;margin-bottom:10px;border:1px solid #ddd;font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+				<img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style="width:18px;height:18px;margin-right:10px;">
+				Sign in with Google
+			</a>
+			<?php else: ?>
+			<p style="color:#a00;margin:10px 0;">Google login is not configured. Please set credentials in <code>config/google_auth.php</code>.</p>
+			<?php endif; ?>
+		</div>
     </div>
     
 </div>

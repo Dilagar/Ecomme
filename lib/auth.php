@@ -46,17 +46,18 @@ function require_user() {
     }
 }
 
-function user_register($name, $email, $password) {
+function user_register($name, $email, $password, $phone = null) {
     global $conn;
     $name_s = mysqli_real_escape_string($conn, $name);
     $email_s = mysqli_real_escape_string($conn, $email);
+    $phone_s = $phone ? mysqli_real_escape_string($conn, $phone) : 'NULL';
     $exists = mysqli_query($conn, "SELECT id FROM users WHERE email='".$email_s."' LIMIT 1");
     if ($exists && mysqli_num_rows($exists) > 0) {
         return 'Email already registered';
     }
     $hash = password_hash($password, PASSWORD_BCRYPT);
     $hash_s = mysqli_real_escape_string($conn, $hash);
-    $ok = mysqli_query($conn, "INSERT INTO users (name, email, password_hash) VALUES ('{$name_s}','{$email_s}','{$hash_s}')");
+    $ok = mysqli_query($conn, "INSERT INTO users (name, email, phone, password_hash) VALUES ('{$name_s}','{$email_s}',{$phone_s},'{$hash_s}')");
     if ($ok) { return true; }
     return 'Registration failed';
 }
@@ -71,14 +72,32 @@ function user_login($email, $password) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
             $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_phone'] = $user['phone'];
             return true;
         }
     }
     return false;
 }
 
+function user_login_by_phone($phone, $password_hash) {
+    global $conn;
+    $phone_s = mysqli_real_escape_string($conn, $phone);
+    $password_hash_s = mysqli_real_escape_string($conn, $password_hash);
+    $res = mysqli_query($conn, "SELECT * FROM users WHERE phone='".$phone_s."' AND password_hash='".$password_hash_s."' LIMIT 1");
+    if ($res && mysqli_num_rows($res) === 1) {
+        $user = mysqli_fetch_assoc($res);
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_email'] = $user['email'];
+        $_SESSION['user_name'] = $user['name'];
+        $_SESSION['user_phone'] = $user['phone'];
+        $_SESSION['logged_in'] = true;
+        return true;
+    }
+    return false;
+}
+
 function user_logout() {
-    unset($_SESSION['user_id'], $_SESSION['user_email'], $_SESSION['user_name']);
+    unset($_SESSION['user_id'], $_SESSION['user_email'], $_SESSION['user_name'], $_SESSION['user_phone'], $_SESSION['logged_in']);
 }
 
 ?>
